@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        form {
+            border: 1px solid #f1f1f1;
+        }
+
+        input[type=text], input[type=password] {
+            width: 20%;
+            padding: 12px 10px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .toshow {
+            display: none;
+        }
+
+        button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 20%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 20%;
+            border-radius: 25%;
+        }
+
+        .container {
+            padding: 2px;
+        }
+
+        span.psw {
+            float: right;
+            padding-top: 2px;
+        }
+
+        /* Change styles for span and cancel button on extra small screens */
+        @media screen and (max-width: 300px) {
+            span.psw {
+                display: block;
+                float: none;
+            }
+
+            .cancelbtn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2 align="center" style="background-color:#f1f1f1">Malicious Email Detector</h2>
+
+<form action="/action_page.php" method="post">
+    <div class="imgcontainer">
+        <img src="malicious.jpg" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container" align="center">
+        <br>
+        <label for="uname"><b>Username</b></label>
+        </br>
+        <br>
+        <input id="username" type="text" placeholder="Enter Username" name="uname" required>
+        </br>
+        <br>
+        <label for="psw"><b>Password</b></label>
+        </br>
+        <br>
+        <input id="password" type="password" placeholder="Enter Password" name="psw" required>
+        <!--br></br>siwgsugcrgqqgdua</br-->
+        </br>
+        <br>
+        <button type="button" onclick="loginInformation()">Login</button>
+        </br>
+        <span id="login_failed_msg" style="color:red"></span><br>
+        <div id='pb' class="toshow">Loading</div>
+
+    </div>
+    <div class="container" style="background-color:#f1f1f1">
+        <button type="button" class="cancelbtn">Cancel</button>
+    </div>
+</form>
+<script>
+    function loginInformation() {
+        myProgressbar('pb');
+        const message = document.getElementById("login_failed_msg");
+        var userName = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var data = '{"username":"' + userName + '","password":"' + password + '"}';
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "http://localhost:8080/api/login",
+            data: data,
+            timeout: 100000,
+            complete: function (xhr, textStatus) {
+                if (xhr.status == 200) {
+                    window.location.replace('/scan');
+                } else {
+                    pb.innerHTML = "";
+                    message.innerHTML = "Username or Password incorrect"
+                }
+            }
+        });
+    }
+
+    function myProgressbar(id) {
+        var obj = {
+                outer: [
+                    document.getElementById(id),
+                    {
+                        display: 'inline-block',
+                        width: '500px',
+                        background: '',
+                        borderRadius: '8px',
+                        color: 'black',
+                    },
+                ],
+                inner: [
+                    document.createElement('div'),
+                    {
+                        margin: '10px',
+                        height: '20px',
+                        background: '#3090C7',
+                        color: 'black',
+                    },
+                ],
+            },
+            i,
+            m;
+
+        obj.outer[0].appendChild(obj.inner[0]);
+
+        for (i in obj) {
+            for (m in obj[i][1]) {
+                obj[i][0].style[m] = obj[i][1][m];
+            }
+        }
+        var width = obj.inner[0].offsetWidth;
+
+        obj.outer[0].style.height = obj.outer[0].offsetHeight;
+
+        var progress = function (m) {
+                if (m <= 100 && m >= 0) {
+                    obj.inner[0].style.width = Math.round(width / 100 * m) + 'px';
+                }
+            },
+            p = 0,
+            direction,
+            interval = setInterval(function () {
+                //p = p || 0;
+                if (p <= 1) {
+                    direction = '+';
+                    obj.outer[0].setAttribute('align', 'left');
+                }
+
+                if (p >= 200) {
+                    direction = '-';
+                    obj.outer[0].setAttribute('align', 'right');
+                }
+                direction === '+' ? p++ : p--;
+                progress(p);
+            }, 0);
+    }
+</script>
+</body>
+</html>

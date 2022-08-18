@@ -1,0 +1,12 @@
+[
+  {
+    "emailID": "" ,
+    "token": "",
+    "socketFactoryPort" : "993",
+    "emailClass" : "javax.net.ssl.SSLSocketFactory",
+    "auth" : true,
+    "smtpPort" : "465",
+    "protocol" : "smtp",
+    "server" : "imap.googlemail.com"
+  }
+]

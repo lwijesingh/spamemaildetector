@@ -1,0 +1,314 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Javacodepoint</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .action-icon {
+            padding: 5px;
+            cursor: pointer;
+            color: #fff
+        }
+
+        .table {
+            font-size: 11px;
+        }
+
+        .table > tbody > tr > td {
+            padding: 2px 6px;
+            vertical-align: middle;
+            border: none;
+        }
+
+        #main-container {
+            padding: 0px 20px 40px;
+            width: 52%;
+        }
+
+        #upload-status-container {
+            display: none;
+        }
+
+        #upload-status-container2 {
+            display: none;
+        }
+
+        #upload-header {
+            height: 35px;
+            width: 100%;
+            background-color: #323254;
+            color: #fff;
+            padding: 8px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        #upload-header2 {
+            height: 35px;
+            width: 100%;
+            background-color: #323254;
+            color: #fff;
+            padding: 8px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        #progress-bar-container {
+            padding: 20px;
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid #323254;
+        }
+
+        .logout {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 12px;
+        }
+
+        #progress-bar-container2 {
+            padding: 40px;
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid #323254;
+        }
+
+        ::-webkit-scrollbar {
+            background-color: #ffffff;
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #C0C0C0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<h2 align="center" style="background-color:#f1f1f1" class="text-info">Scanning & Results Page</h2>
+<form style=" width: 50vw; margin-left : 35vw;">
+    <div id="main-container" align="center">
+        <p>Please select the Scanning method :</p>
+        <input type="radio" id="html" name="radio" value="URL">
+        <label for="html">By URL Scanning</label><br>
+        <input type="radio" id="css" name="radio" value="MACHINE">
+        <label for="css">By Machine Learning</label><br>
+        <p id="output" style="color:red"></p>
+        <div style="margin-bottom: 20px" align="center">
+            <button id="btn" class="btn btn-primary" type="button" onclick="scanningTypeSelection()"></i> Scan
+                emails
+            </button>
+        </div>
+        <div id="upload-status-container" align="center">
+            <div id="upload-header">
+                <span id="upload-header-text"></span>
+                <i class="action-icon fa fa-window-minimize pull-right" onclick="showHideWindow1(this)"
+                   title="minimize"></i>
+            </div>
+            <div id="progress-bar-container" align="center">
+                <table class="table">
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="progress" align="center">
+                <table class="table">
+                    <tbody>
+                    <div class="progress-bar progress-bar-striped" style="min-width: 0px;" align="center"></div>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="margin-bottom: 20px" align="center">
+            <button class="btn btn-primary" type="button" onclick="moveMaliciousEmails()"></i>
+                Move Emails
+            </button>
+        </div>
+        <div id="upload-status-container2" align="center">
+            <div id="upload-header2" align="center">
+                <span id="upload-header-text2"></span>
+                <i class="action-icon fa fa-window-minimize pull-right" onclick="showHideWindow2(this)"
+                   title="minimize"></i>
+            </div>
+            <div id="progress-bar-container2" align="center">
+                <table class="table">
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="progress" align="center">
+                <table class="table">
+                    <tbody>
+                    <div name="move_pb" class="progress-bar progress-bar-striped" style="min-width: 0px;"
+                         align="center"></div>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="container" align="center">
+        <button type="button" class="logout" onclick="logout()">Logout</button>
+    </div>
+</form>
+</body>
+<script>
+    function scanningTypeSelection() {
+        const message = document.getElementById("output");
+        if (document.querySelector('input[name="radio"]:checked') == null) {
+            message.innerHTML = "Please select the scanning type"
+        } else if (document.querySelector('input[name="radio"]:checked').value == "URL") {
+            message.innerHTML = ""
+            scanByUrls();
+        } else if (document.querySelector('input[name="radio"]:checked').value == "MACHINE") {
+            message.innerHTML = ""
+            scanEmailsByML();
+        }
+    }
+
+    function showHideWindow1(ele) {
+        if ($(ele).hasClass('fa-window-minimize')) {
+            $(ele).removeClass('fa-window-minimize').addClass('fa-window-restore').attr("title", "restore");
+            $("#progress-bar-container").slideUp();
+        } else {
+            $(ele).addClass('fa-window-minimize').removeClass('fa-window-restore').attr("title", "minimize");
+            $("#progress-bar-container").slideDown();
+        }
+    }
+
+    function showHideWindow2(ele) {
+        if ($(ele).hasClass('fa-window-minimize')) {
+            $(ele).removeClass('fa-window-minimize').addClass('fa-window-restore').attr("title", "restore");
+            $("#progress-bar-container2").slideUp();
+        } else {
+            $(ele).addClass('fa-window-minimize').removeClass('fa-window-restore').attr("title", "minimize");
+            $("#progress-bar-container2").slideDown();
+        }
+    }
+
+    function scanEmailsByML() {
+        var $tbody = $("#progress-bar-container").find("tbody");
+        $tbody.empty();
+        var n = parseInt(1);
+        var bar = document.querySelector(".progress-bar");
+        var sse = new EventSource('http://localhost:8080/api/scanEmailsByML');
+        sse.addEventListener("COMPLETE", function (evt) {
+            sse.close();
+        });
+        sse.onmessage = function (evt) {
+            console.log(evt.data)
+            var index = evt.data.lastIndexOf("_");
+            var scanningCount = evt.data.substr(0, index);
+            var totalCount = evt.data.substr(index + 1);
+            var b = n++;
+            if (b > totalCount) {
+                sse.close()
+            }
+            var i = parseInt(scanningCount);
+            if (i <= totalCount) {
+                i = parseInt(i);
+                $("#upload-header-text").html(i + " of " + totalCount + " file(s) is scanning...");
+                var j = Math.round(i / totalCount * 100);
+                console.log(j);
+                bar.style.width = j + "%";
+                bar.innerText = j + "%";
+                $tbody.empty();
+                $tbody.append(bar);
+            }
+            $("#upload-header-text").html(i + " out of " + totalCount + " file(s) is Scanned...");
+        };
+        $("#upload-status-container").show();
+    };
+
+    function scanByUrls() {
+        var $tbody = $("#progress-bar-container").find("tbody");
+        $tbody.empty();
+        var n = parseInt(1);
+        var bar = document.querySelector(".progress-bar");
+        var sse = new EventSource('http://localhost:8080/api/scanEmailsByUrl');
+        sse.addEventListener("COMPLETE", function (evt) {
+            sse.close();
+        });
+        sse.onmessage = function (evt) {
+            console.log(evt.data)
+            var index = evt.data.lastIndexOf("_");
+            var scanningCount = evt.data.substr(0, index);
+            var totalCount = evt.data.substr(index + 1);
+            var b = n++;
+            if (b > totalCount) {
+                sse.close()
+            }
+            var i = parseInt(scanningCount);
+            if (i <= totalCount) {
+                i = parseInt(i);
+                $("#upload-header-text").html(i + " of " + totalCount + " file(s) is scanning...");
+                var j = Math.round(i / totalCount * 100);
+                console.log(j);
+                bar.style.width = j + "%";
+                bar.innerText = j + "%";
+                $tbody.empty();
+                $tbody.append(bar);
+                // $tbody.empty();
+            }
+            $("#upload-header-text").html(i + " out of " + totalCount + " file(s) is Scanned...");
+        };
+        $("#upload-status-container").show();
+    };
+
+    function moveMaliciousEmails() {
+        var $tbody = $("#progress-bar-container2").find("tbody");
+        $tbody.empty();
+        var n = parseInt(1);
+        //var bar = document.querySelector(".progress-bar");
+        var bar = document.querySelector('div[name="move_pb"]');
+        var sse = new EventSource('http://localhost:8080/api/moveEmails');
+        sse.onmessage = function (evt) {
+            if (evt.data == "0") {
+                $("#upload-header-text2").html("No emails detected as spam");
+                $("#progress-bar-container2").slideUp();
+                sse.close();
+            } else {
+                var index = evt.data.lastIndexOf("_");
+                var scanningCount = evt.data.substr(0, index);
+                var totalCount = evt.data.substr(index + 1);
+                var b = n++;
+                if (b > totalCount) {
+                    sse.close()
+                }
+                var i = parseInt(scanningCount);
+                if (i <= totalCount) {
+                    i = parseInt(i) + 1;
+                    var j = Math.round(i / totalCount * 100);
+                    // var j = Math.round(i);
+                    bar.style.width = j + "%";
+                    bar.innerText = j + "%";
+                    $tbody.empty();
+                    $tbody.append(bar);
+                    // $tbody.empty();
+                    $("#upload-header-text2").html(i + " file(s) detected as spam and moved to SPAM folder. ");
+                }
+            }
+            ;
+            $("#upload-status-container2").show();
+        }
+    };
+
+    function logout() {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "http://localhost:8080/api/logout",
+            timeout: 100000,
+            complete: function (xhr, textStatus) {
+                if (xhr.status == 200) {
+                    window.location.replace('/');
+                }
+            }
+        });
+    }
+
+</script>
+</html>
